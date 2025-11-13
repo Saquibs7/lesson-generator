@@ -27,16 +27,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          crossOrigin=""
-          src="https://unpkg.com/react@19/umd/react.production.min.js"
-        ></script>
-        <script
-          crossOrigin=""
-          src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"
-        ></script>
-      </head>
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"

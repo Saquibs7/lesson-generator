@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Lesson } from "@/lib/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ export default function Home() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch lessons on mount
   useEffect(() => {
@@ -22,17 +23,27 @@ export default function Home() {
   useEffect(() => {
     const hasGenerating = lessons.some((l) => l.status === "generating");
 
-    if (!hasGenerating) {
-      return; // No polling needed
+    // Clean up existing interval
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
     }
 
-    // Poll every 2 seconds for updates
-    const interval = setInterval(() => {
-      fetchLessons();
-    }, 2000);
+    if (hasGenerating) {
+      // Poll every 3 seconds for updates (only when generating)
+      pollingIntervalRef.current = setInterval(() => {
+        fetchLessons();
+      }, 3000);
+    }
 
-    return () => clearInterval(interval);
-  }, [lessons]);
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessons.length, lessons.filter((l) => l.status === "generating").length]);
 
   const fetchLessons = async () => {
     try {

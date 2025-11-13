@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Lesson } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -53,77 +53,106 @@ export default function LessonPage() {
 
   const loadComponent = async (generatedCode: string) => {
     try {
-      // Wait a bit for React to load
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Compile TypeScript to JavaScript using the API endpoint
+      const compileResponse = await fetch("/api/compile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: generatedCode }),
+      });
 
-      // Transform the code to work in browser
-      const transformedCode = transformCode(generatedCode);
-
-      // Get React from window - it should be loaded by script tags in layout
-      const ReactLib = (window as any).React;
-      if (!ReactLib) {
-        throw new Error("React is not loaded. Please refresh the page.");
+      if (!compileResponse.ok) {
+        const errorData = await compileResponse.json();
+        throw new Error(
+          errorData.details || errorData.error || "Compilation failed"
+        );
       }
 
-      // Create a wrapper that provides React and hooks
-      const executableCode = `
-        (function() {
-          const React = window.React;
-          const { useState, useEffect, useCallback, useMemo, useRef } = React;
-          
-          ${transformedCode}
-          
-          return LessonComponent;
-        })()
-      `;
+      const { compiledCode } = await compileResponse.json();
 
-      // Execute the code and get the component
-      const component = eval(executableCode);
+      // Create sandboxed HTML with React and the compiled component
+      // Use a function to avoid template literal escaping issues
+      const createHtml = (code: string) => {
+        const htmlParts = [
+          "<!DOCTYPE html>",
+          "<html>",
+          "  <head>",
+          '    <meta charset="UTF-8">',
+          '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+          '    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>',
+          '    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>',
+          '    <script src="https://cdn.tailwindcss.com"></script>',
+          "    <style>",
+          "      body { margin: 0; padding: 0; overflow-x: hidden; }",
+          "    </style>",
+          "  </head>",
+          "  <body>",
+          '    <div id="root"></div>',
+          "    <script>",
+          "      try {",
+          "        const { useState, useEffect, useCallback, useMemo, useRef } = React;",
+          "        ",
+          code,
+          "        ",
+          '        const root = ReactDOM.createRoot(document.getElementById("root"));',
+          "        root.render(React.createElement(LessonComponent));",
+          "      } catch (error) {",
+          '        document.body.innerHTML = "<div style=\\"padding: 20px; color: red;\\">Error rendering lesson: " + error.message + "</div>";',
+          '        console.error("Lesson render error:", error);',
+          "      }",
+          "    </script>",
+          "  </body>",
+          "</html>",
+        ];
+        return htmlParts.join("\n");
+      };
 
-      if (component) {
-        setLessonComponent(() => component);
-      } else {
-        throw new Error("Failed to create component");
-      }
+      const html = createHtml(compiledCode);
+
+      // Store the HTML to render in iframe using srcdoc
+      // Capture router in closure
+      const routerInstance = router;
+
+      setLessonComponent(() => {
+        return function IframeLessonWrapper() {
+          const iframeRef = useRef<HTMLIFrameElement>(null);
+
+          useEffect(() => {
+            // Listen for messages from the iframe
+            const handleMessage = (event: MessageEvent) => {
+              if (event.data === "navigateToHome") {
+                // Use Next.js router for navigation
+                routerInstance.push("/");
+              }
+            };
+
+            window.addEventListener("message", handleMessage);
+            return () => window.removeEventListener("message", handleMessage);
+          }, []);
+
+          return (
+            <iframe
+              ref={iframeRef}
+              srcDoc={html}
+              sandbox="allow-scripts allow-top-navigation"
+              style={{
+                width: "100%",
+                minHeight: "600px",
+                border: "none",
+              }}
+              title="Lesson Content"
+            />
+          );
+        };
+      });
     } catch (err) {
       console.error("Error loading component:", err);
       setError(
-        "Failed to render lesson component: " +
+        "Failed to compile and render lesson: " +
           (err instanceof Error ? err.message : "Unknown error")
       );
     }
-  };
-
-  const transformCode = (code: string): string => {
-    let transformed = code;
-
-    // Remove ALL variations of "use client" (including malformed ones)
-    transformed = transformed.replace(/["']use client["'];?/gi, "");
-    transformed = transformed.replace(/use\s+client["'];?/gi, "");
-    transformed = transformed.replace(/["']?use client["']?;?/gi, "");
-
-    // Remove all import statements (including multiline)
-    transformed = transformed.replace(
-      /import\s+[\s\S]*?from\s+["'][^"']+["'];?\s*/g,
-      ""
-    );
-
-    // Remove standalone import statements
-    transformed = transformed.replace(/import\s+["'][^"']+["'];?\s*/g, "");
-
-    // Replace "export default function ComponentName" with "function LessonComponent"
-    transformed = transformed.replace(
-      /export\s+default\s+function\s+\w+/g,
-      "function LessonComponent"
-    );
-
-    // Remove any remaining "export default"
-    transformed = transformed.replace(/export\s+default\s+/g, "");
-
-    // Clean up multiple newlines and whitespace
-    transformed = transformed.trim().replace(/\n{3,}/g, "\n\n");
-
-    return transformed;
   };
   if (loading) {
     return (

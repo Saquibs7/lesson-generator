@@ -51,7 +51,14 @@ CRITICAL REQUIREMENTS:
 3. Use Tailwind CSS for ALL styling (classes like: bg-white, text-gray-900, p-6, rounded-lg, shadow-lg, etc.)
 4. Make it visually appealing with proper spacing, colors, and typography
 5. Include interactive elements where appropriate (buttons, inputs, checkboxes for quizzes)
-6. For quizzes: include answer checking with state management using useState
+6. For quizzes: 
+   - Use pagination with Next/Previous buttons to navigate between questions
+   - Show one question at a time with current question number (e.g., "Question 1 of 10")
+   - Show Submit button only on the last question instead of Next
+   - After submission, show results with score and two buttons: 
+     * "Back to Home" button that calls: window.parent.postMessage('navigateToHome', '*')
+     * "Try Again" button that resets the quiz state to start over
+   - Include answer checking with state management using useState
 7. Use modern React patterns with TypeScript
 8. NO external imports except React hooks (useState, useEffect if needed)
 9. Include proper TypeScript types for all variables and functions
@@ -87,11 +94,6 @@ ${outline}`;
     
     // Clean up the response - remove markdown code fences if present
     code = code.replace(/```typescript\n?/g, "").replace(/```tsx\n?/g, "").replace(/```\n?/g, "").trim();
-    
-    // Ensure "use client" directive is present
-    if (!code.includes('"use client"') && !code.includes("'use client'")) {
-      code = '"use client";\n\n' + code;
-    }
     
     return code;
   },
@@ -130,10 +132,6 @@ Return the fixed code:`;
       const result = await codeModel.generateContent(fixPrompt);
       let fixedCode = result.response.text();
       fixedCode = fixedCode.replace(/```typescript\n?/g, "").replace(/```tsx\n?/g, "").replace(/```\n?/g, "").trim();
-      
-      if (!fixedCode.includes('"use client"') && !fixedCode.includes("'use client'")) {
-        fixedCode = '"use client";\n\n' + fixedCode;
-      }
       
       // Re-validate the fixed code
       const revalidation = validateTypeScriptCode(fixedCode);
