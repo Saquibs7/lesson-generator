@@ -1,109 +1,242 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# AI Lesson Generator
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+A full-stack application that generates interactive educational lessons using AI. Built with Next.js, TypeScript, Supabase, and OpenAI GPT-4.
 
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- **AI-Powered Generation**: Uses Google Gemini to generate complete TypeScript React components
+- **Real-time Updates**: Automatic polling for lesson generation status without page refreshes
+- **TypeScript Safety**: Robust validation and error handling with automatic retry logic
+- **LangSmith Tracing**: Complete observability of AI workflows with LangSmith integration
+- **Interactive Lessons**: Generated lessons include quizzes, explanations, and interactive elements
+- **Beautiful UI**: Modern, responsive design with Tailwind CSS
 
-## Demo
+## Tech Stack
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: Supabase (PostgreSQL)
+- **AI**: Google Gemini 1.5 Pro
+- **Tracing**: LangSmith
+- **Deployment**: Vercel
 
-## Deploy to Vercel
+## Getting Started
 
-Vercel deployment will guide you through creating a Supabase account and project.
+### Prerequisites
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+- Node.js 18+ or Bun
+- A Supabase account ([https://supabase.com](https://supabase.com))
+- A Google Gemini API key ([https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey))
+- A LangSmith account for tracing ([https://smith.langchain.com](https://smith.langchain.com))
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+### Installation
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
-
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
-
-## Clone and run locally
-
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
+1. **Clone the repository** (if not already done):
 
    ```bash
-   npx create-next-app --example with-supabase with-supabase-app
+   git clone <your-repo-url>
+   cd lesson-generator
    ```
 
+2. **Install dependencies**:
+
    ```bash
-   yarn create next-app --example with-supabase with-supabase-app
+   bun install
+   # or
+   npm install
    ```
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
+3. **Set up Supabase**:
+
+   - Create a new project at [https://supabase.com](https://supabase.com)
+   - Go to Settings > API to get your project URL and anon key
+   - Go to SQL Editor and run the migration file:
+     ```sql
+     -- Copy and paste the contents of supabase/migrations/001_create_lessons_table.sql
+     ```
+
+4. **Configure environment variables**:
+
+   Update `.env.local` with your credentials:
+
+   ```env
+   # Supabase
+   NEXT_PUBLIC_SUPABASE_URL=your-project-url
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+
+   # Google Gemini
+   GEMINI_API_KEY=your-gemini-api-key
+
+   # LangSmith (for tracing)
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_API_KEY=your-langsmith-api-key
+   LANGCHAIN_PROJECT=lesson-generator
    ```
 
-3. Use `cd` to change into the app's directory
+5. **Run the development server**:
 
    ```bash
-   cd with-supabase-app
-   ```
-
-4. Rename `.env.example` to `.env.local` and update the following:
-
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
-
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
+   bun dev
+   # or
    npm run dev
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+## Usage
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+1. **Generate a Lesson**:
 
-## Feedback and issues
+   - Enter a lesson outline in the text area (e.g., "A 10 question pop quiz on Florida")
+   - Click "Generate Lesson"
+   - Watch the status in the table below
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+2. **View a Lesson**:
+   - Once generated, click "View Lesson" to see the interactive content
+   - The AI generates a complete TypeScript React component that renders in your browser
 
-## More Supabase examples
+### Example Lesson Outlines
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+- "A 10 question pop quiz on Florida"
+- "A one-pager on how to divide with long division"
+- "An explanation of how the Cartesian Grid works and an example of finding distances between points"
+- "A test on counting numbers"
+- "An interactive tutorial on basic algebra"
+
+## Deployment
+
+### Deploy to Vercel
+
+1. **Push your code to GitHub**
+
+2. **Deploy to Vercel**:
+
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Add all environment variables from `.env.local`
+   - Deploy!
+
+3. **Update Supabase CORS** (if needed):
+   - Go to your Supabase project settings
+   - Add your Vercel domain to allowed origins
+
+### LangSmith Tracing Access
+
+To grant tracing access to the team:
+
+1. Go to [https://smith.langchain.com](https://smith.langchain.com)
+2. Navigate to your project settings
+3. Invite the following emails with "Viewer" role:
+   - k@freestand.in
+   - sushant@freestand.in
+   - abhishek.d@freestand.in
+   - pratik@freestand.in
+
+## Architecture
+
+### Generation Pipeline
+
+1. **User Input**: User submits a lesson outline
+2. **Database Record**: Create initial lesson record with "generating" status
+3. **Background Job**: Trigger async AI generation
+4. **Title Extraction**: GPT-4 mini extracts a concise title
+5. **Code Generation**: GPT-4o generates complete TypeScript component
+6. **Validation**: Multi-step validation with automatic retry (up to 3 attempts)
+7. **Error Correction**: If validation fails, GPT-4o attempts to fix the code
+8. **Database Update**: Update lesson with generated content or error
+9. **Client Polling**: Frontend polls for status updates every 2 seconds
+
+### Reliability Features
+
+- **Automatic Retries**: Up to 3 attempts for generation and validation
+- **Code Validation**: Checks for proper React structure, balanced syntax, and dangerous patterns
+- **Error Recovery**: AI-powered code fixing when validation fails
+- **Graceful Degradation**: Clear error messages and status tracking
+
+### LangSmith Tracing
+
+All AI operations are traced with LangSmith:
+
+- Title extraction
+- Code generation attempts
+- Validation and fixing steps
+- Complete end-to-end workflow
+
+View traces at: [https://smith.langchain.com](https://smith.langchain.com)
+
+## Development
+
+### Project Structure
+
+```
+lesson-generator/
+├── app/
+│   ├── api/
+│   │   └── lessons/
+│   │       ├── route.ts              # GET all lessons
+│   │       ├── [id]/route.ts         # GET single lesson
+│   │       └── generate/route.ts     # POST generate lesson
+│   ├── lessons/
+│   │   └── [id]/page.tsx            # Lesson view page
+│   ├── layout.tsx                    # Root layout
+│   ├── page.tsx                      # Home page
+│   └── globals.css                   # Global styles
+├── components/
+│   └── ui/                           # Shadcn UI components
+├── lib/
+│   ├── lesson-generator.ts           # AI generation logic
+│   ├── types.ts                      # TypeScript types & validation
+│   └── supabase/                     # Supabase clients
+├── supabase/
+│   └── migrations/
+│       └── 001_create_lessons_table.sql
+└── .env.local                        # Environment variables
+```
+
+### Key Files
+
+- `lib/lesson-generator.ts`: Core AI generation with LangSmith tracing
+- `lib/types.ts`: Type definitions and code validation
+- `app/api/lessons/generate/route.ts`: API endpoint for lesson generation
+- `app/lessons/[id]/page.tsx`: Dynamic component rendering
+
+## Troubleshooting
+
+### Lesson generation fails
+
+- Check OpenAI API key is valid and has credits
+- Check LangSmith traces for detailed error information
+- Verify the outline is clear and specific
+
+### Component won't render
+
+- Check browser console for errors
+- Verify the generated code in the database
+- Check that React is loaded globally (in layout.tsx)
+
+### Database connection issues
+
+- Verify Supabase URL and anon key
+- Check that the migration was run successfully
+- Verify RLS policies are set correctly
+
+## Future Enhancements
+
+- [ ] Add SVG generation for diagrams
+- [ ] Integrate AI-generated images
+- [ ] Support for multiple lesson templates
+- [ ] Export lessons as standalone files
+- [ ] Lesson sharing and collaboration
+- [ ] Version history for generated lessons
+
+## License
+
+MIT
+
+## Support
+
+For issues or questions, please check:
+
+1. LangSmith traces for AI generation details
+2. Browser console for client-side errors
+3. Vercel logs for server-side errors
