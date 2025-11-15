@@ -16,7 +16,7 @@ export async function GET(
       .single();
 
     if (error) {
-      console.error("Error fetching lesson:", error);
+      console.error("Error in fetching lesson from API:", error);
       return NextResponse.json(
         { error: "Lesson not found" },
         { status: 404 }

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     if (!outline || typeof outline !== "string" || outline.trim().length === 0) {
       return NextResponse.json(
-        { error: "Lesson outline is required" },
+        { error: "Please enter a lesson title" },
         { status: 400 }
       );
     }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error("Error creating lesson:", insertError);
+      console.error("Error in creating lesson:", insertError);
       return NextResponse.json(
         { error: "Failed to create lesson" },
         { status: 500 }
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       }
     );
   } catch (error) {
-    console.error("Error in generate API:", error);
+    console.error("Error in generating lesson from API:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

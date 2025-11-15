@@ -27,7 +27,7 @@ export default function LessonPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch lesson");
+        throw new Error(data.error || "Failed to fetch lesson from API");
       }
 
       setLesson(data.lesson);
@@ -156,31 +156,32 @@ export default function LessonPage() {
   };
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0C2B4E] to-[#1A3D64] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#FCE4EC] to-[#FAD0E4] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1D546C] mx-auto mb-4"></div>
-          <p className="text-lg text-[#F4F4F4]/90 font-medium">
-            ⏳ Loading lesson...
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#CC5C8A] mx-auto mb-4"></div>
+          <p className="text-lg text-[#7A2E4D] font-medium">
+            🌸 Ruko Jara.. Sabar karo
           </p>
         </div>
       </div>
     );
   }
+  
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0C2B4E] to-[#1A3D64] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#FCE4EC] to-[#FAD0E4] flex items-center justify-center">
         <div className="max-w-2xl mx-auto p-8">
-          <div className="bg-white rounded-lg shadow-2xl p-8 border-2 border-red-300">
+          <div className="bg-white rounded-lg shadow-2xl p-8 border-2 border-[#F2A7C1]">
             <div className="text-center">
               <div className="text-6xl mb-4">⚠️</div>
-              <h2 className="mt-4 text-2xl font-bold text-[#0C2B4E]">
+              <h2 className="mt-4 text-2xl font-bold text-[#7A2E4D]">
                 Error Loading Lesson
               </h2>
-              <p className="mt-2 text-[#1A3D64]/70">{error}</p>
+              <p className="mt-2 text-[#CC5C8A]">{error}</p>
               <Link href="/">
-                <Button className="mt-6 bg-gradient-to-r from-[#1A3D64] to-[#1D546C] hover:from-[#0C2B4E] hover:to-[#1A3D64] text-white shadow-lg">
-                  ← Back to Home
+                <Button className="mt-6 bg-gradient-to-r from-[#F2A7C1] to-[#CC5C8A] text-white shadow-lg hover:from-[#CC5C8A] hover:to-[#7A2E4D]">
+                  ← Back to Lessons
                 </Button>
               </Link>
             </div>
@@ -189,77 +190,79 @@ export default function LessonPage() {
       </div>
     );
   }
-
+  
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0C2B4E] to-[#1A3D64] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#FCE4EC] to-[#FAD0E4] flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🔍</div>
-          <p className="text-lg text-[#F4F4F4]/90 font-medium mb-4">
+          <p className="text-lg text-[#7A2E4D] font-medium mb-4">
             Lesson not found
           </p>
           <Link href="/">
-            <Button className="mt-4 bg-gradient-to-r from-[#1A3D64] to-[#1D546C] hover:from-[#0C2B4E] hover:to-[#1A3D64] text-white shadow-lg">
-              ← Back to Home
+            <Button className="mt-4 bg-gradient-to-r from-[#F2A7C1] to-[#CC5C8A] text-white shadow-lg hover:from-[#CC5C8A] hover:to-[#7A2E4D]">
+              ← Back to Lessons
             </Button>
           </Link>
         </div>
       </div>
     );
   }
+  
 
   if (lesson.status === "generating") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0C2B4E] to-[#1A3D64] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#FCE4EC] to-[#FAD0E4] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1D546C] mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-white mb-2">
-            ✨ Generating Your Lesson
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#CC5C8A] mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-[#7A2E4D] mb-2">
+            🌸 Generating Your Lesson
           </h2>
-          <p className="text-[#F4F4F4]/80">
-            This may take a moment. The page will update automatically when
-            ready.
+          <p className="text-[#CC5C8A]">
+            Please wait... your lesson is being generated.
           </p>
         </div>
       </div>
     );
   }
-
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0C2B4E] to-[#1A3D64]">
+    <div className="min-h-screen bg-gradient-to-br from-[#FCE4EC] to-[#FAD0E4]">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
+  
         {/* Header */}
         <div className="mb-6">
           <Link href="/">
             <Button
               variant="outline"
-              className="mb-4 bg-white/90 border-2 border-[#1D546C]/30 text-[#0C2B4E] hover:bg-[#F4F4F4] hover:border-[#1D546C] transition-all duration-200"
+              className="mb-4 bg-white/90 border-2 border-[#F2A7C1]/40 text-[#7A2E4D] hover:bg-[#FDECF4] hover:border-[#CC5C8A]"
             >
               ← Back to Lessons
             </Button>
           </Link>
-          <div className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-lg border-2 border-[#1D546C]/20">
-            <h1 className="text-3xl font-bold text-[#0C2B4E]">
-              📚 {lesson.title}
+  
+          <div className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-lg border-2 border-[#F2A7C1]/30">
+            <h1 className="text-3xl font-bold text-[#7A2E4D]">
+              🌸 {lesson.title}
             </h1>
           </div>
         </div>
-
-        {/* Render the generated lesson component */}
-        <div className="bg-white rounded-lg shadow-2xl overflow-hidden border-2 border-[#1D546C]/20">
+  
+        {/* Content Container */}
+        <div className="bg-white rounded-lg shadow-2xl overflow-hidden border-2 border-[#F2A7C1]/30">
           {LessonComponent ? (
             <div className="p-0">
               <LessonComponent />
             </div>
           ) : (
             <div className="p-8 text-center">
-              <p className="text-gray-600 dark:text-gray-400">
-                Unable to render lesson content
-              </p>
+              <p className="text-[#CC5C8A]">Unable to render lesson content</p>
             </div>
           )}
         </div>
+  
       </div>
     </div>
   );
+  
 }
